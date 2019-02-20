@@ -3,6 +3,9 @@
 
 int main(int argc, char* argv[]) {
   bool fileNameEntered = false;
+  Simulator sim = Simulator();
+
+  // Handle the command line arguments and determine action
   if (argc == 1) {
     // Only the executable name
 
@@ -46,10 +49,76 @@ int main(int argc, char* argv[]) {
       else if ( cmd.length() > 1 && cmd != "-h" && cmd != "--help" && cmd != "-a" && cmd != "--algorithm" && cmd != "-t" && cmd !=  "--per_thread" ) {
         // fileName string was provided
         std::cout << "File Name was provided" << std::endl;
+        sim.setFileName(cmd);
+        fileNameEntered = true;
       }
       else {
         std::cout << "No flag or file name was provided; existing simulation" << std::endl;
       }
     }
   }
+
+  // Execute simulation
+  if ( fileNameEntered ) {
+    std::string line;
+    std::ifstream file(sim.getFileName());
+    if (file) {
+      if (file.is_open()) {
+        while (!file.eof()) {
+          if (getline (file, line)) {
+            // using the string of each line and execute the command
+            // Process each line of the file
+            sim.parse(line);
+          }
+        }
+      }
+      file.close();
+    }
+    else {
+      std::cout << "File does not exist" << std::endl;
+    }
+  }
+}
+
+
+
+
+
+
+
+// ***************************************************************************//
+// Simulator Class function implmentations
+// ***************************************************************************//
+
+void Simulator::setFileName (std::string file) {
+  this->fileName = file;
+}
+
+std::string Simulator::getFileName () {
+  return this->fileName;
+}
+
+std::vector<int> Simulator::split(std::string str, char delimiter) {
+  // splits strings into different elements in the vector broken up by the
+  // delimiter
+  std::vector<int> final;
+  std::stringstream ss(str);
+  std::string temp;
+  int num;
+  while (getline(ss, temp, delimiter)) {
+    std::stringstream chg(temp);
+    chg >> num;
+    final.push_back(num);
+  }
+  return final;
+}
+
+void Simulator::parse (std::string line) {
+  // split each line into a vector of integers
+  std::vector<int> schedule;
+  schedule = split(line, ' ');
+  for (int i = 0; i < schedule.size(); i++) {
+    std::cout << schedule[i] << " ";
+  }
+  std::cout << std::endl;
 }

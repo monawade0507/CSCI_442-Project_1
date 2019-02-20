@@ -16,3 +16,18 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <ctype.h>
+
+class Simulator {
+public:
+  Simulator () {
+    this->fileName = "";
+  }
+
+  void setFileName (std::string file);
+  std::vector<int> split(std::string str, char delimiter);
+  std::string getFileName ();
+  void parse (std::string line);
+
+private:
+  std::string fileName;
+};
