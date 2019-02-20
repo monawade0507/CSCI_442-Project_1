@@ -37,7 +37,7 @@ clean:
 # This might work to create the submission tarball in the formal I asked for.
 #
 submit:
-	rm -f core Project_0 mysh.o mysh
+	rm -f core Project_1 simulator simulator.o process.o thread.o
 	mkdir "dwade-D1"
-	cp Makefile README.txt *.h *.cpp `dwade-D1`
-	tar cf `dwade-D1`.tar `dwade-D1`
+	cp Makefile README.txt *.h *.cpp "dwade-D1"
+	tar cf "dwade-D1".tar "dwade-D1"
