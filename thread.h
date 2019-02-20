@@ -24,7 +24,7 @@ class Thread {
   };
 
   enum Stage {
-    none = -1,
+    NONE = -1,
     NEW = 0,
     READY = 1,
     RUNNING = 2,
@@ -32,11 +32,15 @@ class Thread {
     EXIT = 4
   };
 
+
+
 public:
   Thread () {
     this->ID = -1;
     this->arrivalTime = -1;
     this->amtBurst = -1;
+    this->preState = NONE;
+    this->currentState = NEW;
   }
 
   void setID (int id);
@@ -55,12 +59,16 @@ public:
   void setAmtBurst (int amt);
   int getAmtBurst ();
   void cleanThread();
+  void changeStage (int newStages);
+  std::string getPreState ();
+  std::string getCurrentState();
 
 private:
   int ID;
   std::vector<Burst> burstPair;
   Burst thrBurst;
-  Stage state;
+  Stage preState;
+  Stage currentState;
   int arrivalTime;
   int amtBurst;
 

@@ -48,7 +48,6 @@ int main(int argc, char* argv[]) {
       }
       else if ( cmd.length() > 1 && cmd != "-h" && cmd != "--help" && cmd != "-a" && cmd != "--algorithm" && cmd != "-t" && cmd !=  "--per_thread" ) {
         // fileName string was provided
-        std::cout << "File Name was provided" << std::endl;
         sim.setFileName(cmd);
         fileNameEntered = true;
       }
@@ -139,25 +138,33 @@ void Simulator::createProcessAndThread () {
   ptr ++;
 
 
-  while (amnt < this->numProcesses) {
+  while (amnt < (this->numProcesses)) {
     std::vector<int> prcHeader = schedule.at(ptr);
 
     this->tmpProcess.setID(prcHeader.at(0));
     this->tmpProcess.setState(prcHeader.at(1));
     this->tmpProcess.setAmtThreads(prcHeader.at(2));
+    this->tmpProcess.updateEvent(0);
     ptr ++;
 
     int threadCnt = 0;
-    while (threadCnt < this->tmpProcess.getAmtThreads()) {
+    while (threadCnt < (this->tmpProcess.getAmtThreads())) {
         std::vector<int> thr = schedule.at(ptr);
+
         this->tmpProcess.tmpThread.setID(threadCnt);
         this->tmpProcess.tmpThread.setArrivalTime(thr.at(0));
         this->tmpProcess.tmpThread.setAmtBurst(thr.at(1));
         ptr ++;
 
+        // add new thread to event eventQueue
+        this->time = this->tmpProcess.tmpThread.getArrivalTime();
+        //eventQueue.insert(this->time, this->tmpProcess);
+        eventQueue.insert( std::pair<int, Process>(this->time, this->tmpProcess));
+
         int burstCnt = 0;
-        while (burstCnt < this->tmpProcess.tmpThread.getAmtBurst()) {
+        while (burstCnt < (this->tmpProcess.tmpThread.getAmtBurst())) {
           std::vector<int> pair = schedule.at(ptr);
+
           if (pair.size() == 2) {
             this->tmpProcess.tmpThread.addToBurstVector(pair.at(0), pair.at(1));
           }
@@ -169,12 +176,12 @@ void Simulator::createProcessAndThread () {
         }
         this->tmpProcess.addThread(this->tmpProcess.tmpThread);
         threadCnt ++;
-        ptr ++;
+        //ptr ++;
         this->tmpProcess.tmpThread.cleanThread();
     }
     this->processStore.push_back(this->tmpProcess);
     amnt ++;
-    ptr ++;
+    //ptr ++;
     this->tmpProcess.cleanProcess();
 
   }
@@ -183,5 +190,23 @@ void Simulator::createProcessAndThread () {
 
 // Main loop
 void Simulator::simulate () {
+  // Print out event queue as desired
+  // Loop through map
+  for (const auto& elem : eventQueue) {
+    //elem.first gives the key -> int
+    //elem.second gives mapped element -> Process
+    std::cout << "At time " << elem.first << ": " << std::endl;
+    Process tmp = elem.second;
+    std::cout << "  " << tmp.getEvent() << std::endl;
+    std::cout << "  Thread " << tmp.tmpThread.getID() << " ";
+    std::cout << "in process " << tmp.getID() << "  [";
+    std::cout << tmp.getPriority() << "] " << std::endl;
+    tmp.tmpThread.changeStage(1);
+    std::cout << "  Transitioned from " << tmp.tmpThread.getPreState();
+    std::cout << " to " << tmp.tmpThread.getCurrentState() << std::endl;
+
+  }
+
+
 
 }

@@ -8,13 +8,13 @@ int Thread::getID () {
   return this->ID;
 }
 
-void Thread::setStage (int state) {
-  this->state = static_cast<Stage>(state);
-}
-
-int Thread::getStage () {
-  return (int)this->state;
-}
+// void Thread::setStage (int state) {
+//   this->state = static_cast<Stage>(state);
+// }
+//
+// int Thread::getStage () {
+//   return (int)this->state;
+// }
 
 void Thread::setBurstCPU (int cpu) {
   this->thrBurst.cpu = cpu;
@@ -75,5 +75,58 @@ void Thread::cleanThread () {
   this->ID = -1;
   this->arrivalTime = -1;
   this->amtBurst = -1;
-  this->state = none;
+  //this->state = none;
+}
+
+void Thread::changeStage (int newStages) {
+  this->preState = this->currentState;
+  this->currentState = static_cast<Stage>(newStages);
+}
+
+std::string Thread::getPreState () {
+  switch (this->preState)
+    {
+      case NEW:
+        return "NEW";
+        break;
+      case READY:
+        return "READY";
+        break;
+      case RUNNING:
+        return "RUNNING";
+        break;
+      case BLOCKED:
+        return "BLOCKED";
+        break;
+      case EXIT:
+        return "EXIT";
+        break;
+      default:
+        return "NONE";
+    }
+
+}
+
+std::string Thread::getCurrentState () {
+  switch (this->currentState)
+    {
+      case NEW:
+        return "NEW";
+        break;
+      case READY:
+        return "READY";
+        break;
+      case RUNNING:
+        return "RUNNING";
+        break;
+      case BLOCKED:
+        return "BLOCKED";
+        break;
+      case EXIT:
+        return "EXIT";
+        break;
+      default:
+        return "NONE";
+    }
+
 }
