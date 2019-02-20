@@ -34,6 +34,7 @@ class Thread {
 public:
   Thread () {
     this->ID = -1;
+    this->arrivalTime = -1;
   }
 
   void setID (int id);
@@ -47,6 +48,9 @@ public:
   std::vector<int> split(std::string str, char delimiter);
   void addToBurstVector (int cpu, int io);
   // std::string getBurstPair ();
+  void setArrivalTime (int time);
+  int getArrivalTime ();
+
 
 
 private:
@@ -54,4 +58,5 @@ private:
   std::vector<Burst> burstPair;
   Burst thrBurst;
   Stage state;
+  int arrivalTime;
 };

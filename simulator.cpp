@@ -58,7 +58,7 @@ int main(int argc, char* argv[]) {
     }
   }
 
-  // Execute simulation
+  // Extract information for the input file
   if ( fileNameEntered ) {
     std::string line;
     std::ifstream file(sim.getFileName());
@@ -78,11 +78,17 @@ int main(int argc, char* argv[]) {
       std::cout << "File does not exist" << std::endl;
     }
   }
+
+  /*
+   main loop of the simulation:
+   should consist of processing the next event, perhaps adding more future events
+   in the queue as a result, advancing the clock (by taking the next scheduled
+   event from the front of the event queue), so on until all threads are
+   terminated.
+  */
+  sim.simulate();
+
 }
-
-
-
-
 
 
 
@@ -115,10 +121,19 @@ std::vector<int> Simulator::split(std::string str, char delimiter) {
 
 void Simulator::parse (std::string line) {
   // split each line into a vector of integers
-  std::vector<int> schedule;
-  schedule = split(line, ' ');
+  std::vector<int> occurence;
+  occurence = split(line, ' ');
+  schedule.push_back(occurence);
+}
+
+// Main loop
+void Simulator::simulate () {
+  std::cout << schedule.at(0).at(0) << std::endl;
   for (int i = 0; i < schedule.size(); i++) {
-    std::cout << schedule[i] << " ";
+    std::vector<int> temp = schedule.at(i);
+    for (int j = 0; j < temp.size(); j++) {
+      std::cout << temp.at(j);
+    }
+    std::cout << std::endl;
   }
-  std::cout << std::endl;
 }

@@ -53,3 +53,11 @@ void Thread::addToBurstVector(int cpu, int io) {
   temp.io = io;
   this->burstPair.push_back(temp);
 }
+
+void Thread::setArrivalTime (int time) {
+  this->arrivalTime = time;
+}
+
+int Thread::getArrivalTime () {
+  return this->arrivalTime;
+}
