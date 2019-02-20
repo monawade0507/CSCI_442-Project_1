@@ -9,7 +9,7 @@ int Thread::getID () {
 }
 
 void Thread::setStage (int state) {
-  this->state = state;
+  this->state = static_cast<Stage>(state);
 }
 
 int Thread::getStage () {
@@ -60,4 +60,20 @@ void Thread::setArrivalTime (int time) {
 
 int Thread::getArrivalTime () {
   return this->arrivalTime;
+}
+
+void Thread::setAmtBurst (int amt) {
+  this->amtBurst = amt;
+}
+
+int Thread::getAmtBurst () {
+  return this->amtBurst;
+}
+
+void Thread::cleanThread () {
+  this->burstPair.clear();
+  this->ID = -1;
+  this->arrivalTime = -1;
+  this->amtBurst = -1;
+  this->state = none;
 }

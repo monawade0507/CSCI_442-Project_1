@@ -86,6 +86,7 @@ int main(int argc, char* argv[]) {
    event from the front of the event queue), so on until all threads are
    terminated.
   */
+  sim.createProcessAndThread();
   sim.simulate();
 
 }
@@ -123,17 +124,64 @@ void Simulator::parse (std::string line) {
   // split each line into a vector of integers
   std::vector<int> occurence;
   occurence = split(line, ' ');
-  schedule.push_back(occurence);
+  if (occurence.size() > 0) {
+    schedule.push_back(occurence);
+  }
+}
+
+void Simulator::createProcessAndThread () {
+  int ptr = 0;
+  int amnt = 0;
+  std::vector<int> header = schedule.at(ptr);
+  this->numProcesses = header.at(0);
+  this->threadSwitchOverhead = header.at(1);
+  this->processSwitchOverhead = header.at(2);
+  ptr ++;
+
+
+  while (amnt < this->numProcesses) {
+    std::vector<int> prcHeader = schedule.at(ptr);
+
+    this->tmpProcess.setID(prcHeader.at(0));
+    this->tmpProcess.setState(prcHeader.at(1));
+    this->tmpProcess.setAmtThreads(prcHeader.at(2));
+    ptr ++;
+
+    int threadCnt = 0;
+    while (threadCnt < this->tmpProcess.getAmtThreads()) {
+        std::vector<int> thr = schedule.at(ptr);
+        this->tmpProcess.tmpThread.setID(threadCnt);
+        this->tmpProcess.tmpThread.setArrivalTime(thr.at(0));
+        this->tmpProcess.tmpThread.setAmtBurst(thr.at(1));
+        ptr ++;
+
+        int burstCnt = 0;
+        while (burstCnt < this->tmpProcess.tmpThread.getAmtBurst()) {
+          std::vector<int> pair = schedule.at(ptr);
+          if (pair.size() == 2) {
+            this->tmpProcess.tmpThread.addToBurstVector(pair.at(0), pair.at(1));
+          }
+          if (pair.size() == 1) {
+            this->tmpProcess.tmpThread.addToBurstVector(pair.at(0), 0);
+          }
+          burstCnt ++;
+          ptr ++;
+        }
+        this->tmpProcess.addThread(this->tmpProcess.tmpThread);
+        threadCnt ++;
+        ptr ++;
+        this->tmpProcess.tmpThread.cleanThread();
+    }
+    this->processStore.push_back(this->tmpProcess);
+    amnt ++;
+    ptr ++;
+    this->tmpProcess.cleanProcess();
+
+  }
+
 }
 
 // Main loop
 void Simulator::simulate () {
-  std::cout << schedule.at(0).at(0) << std::endl;
-  for (int i = 0; i < schedule.size(); i++) {
-    std::vector<int> temp = schedule.at(i);
-    for (int j = 0; j < temp.size(); j++) {
-      std::cout << temp.at(j);
-    }
-    std::cout << std::endl;
-  }
+
 }

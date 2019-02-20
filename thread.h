@@ -24,6 +24,7 @@ class Thread {
   };
 
   enum Stage {
+    none = -1,
     NEW = 0,
     READY = 1,
     RUNNING = 2,
@@ -35,6 +36,7 @@ public:
   Thread () {
     this->ID = -1;
     this->arrivalTime = -1;
+    this->amtBurst = -1;
   }
 
   void setID (int id);
@@ -43,15 +45,16 @@ public:
   int getStage ();
   void setBurstCPU (int cpu);
   void setBurstIO (int io);
-  int getBurstCPU (int cpu);
-  int getBurstIO (int io);
+  int getBurstCPU ();
+  int getBurstIO ();
   std::vector<int> split(std::string str, char delimiter);
   void addToBurstVector (int cpu, int io);
   // std::string getBurstPair ();
   void setArrivalTime (int time);
   int getArrivalTime ();
-
-
+  void setAmtBurst (int amt);
+  int getAmtBurst ();
+  void cleanThread();
 
 private:
   int ID;
@@ -59,4 +62,6 @@ private:
   Burst thrBurst;
   Stage state;
   int arrivalTime;
+  int amtBurst;
+
 };

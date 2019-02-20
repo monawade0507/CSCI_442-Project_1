@@ -14,10 +14,16 @@ LDFLAGS = -g -pthread
 #
 LIBRARYS = -lpthread
 
-simulator: simulator.o
-	${LD} ${LDFLAGS} simulator.o -o $@ ${LIBRARYS}
+simulator: simulator.o process.o thread.o
+	${LD} ${LDFLAGS} simulator.o process.o thread.o -o $@ ${LIBRARYS}
 
-simulator.o : simulator.cpp simulator.h process.cpp process.h thread.cpp thread.h
+simulator.o : simulator.cpp simulator.h
+	${CXX} -c ${CXXFLAGS} -o $@ $<
+
+process.o : process.cpp process.h
+	${CXX} -c ${CXXFLAGS} -o $@ $<
+
+thread.o : thread.cpp thread.h
 	${CXX} -c ${CXXFLAGS} -o $@ $<
 
 
@@ -25,7 +31,7 @@ simulator.o : simulator.cpp simulator.h process.cpp process.h thread.cpp thread.
 # Please remember not to submit objects or binarys.
 #
 clean:
-	rm -f core simulator.o simulator
+	rm -f core simulator.o thread.o process.o simulator
 
 #
 # This might work to create the submission tarball in the formal I asked for.

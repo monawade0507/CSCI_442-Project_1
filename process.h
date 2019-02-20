@@ -20,6 +20,7 @@
 
 class Process {
   enum Priority {
+    none = -1,
     system = 0,
     interactive = 1,
     normal = 2,
@@ -29,10 +30,26 @@ class Process {
 public:
   Process () {
     this->ID = -1;
+    this->amtThreads = -1;
+    this->threads.clear();
+    this->state = none;
   }
+
+  void setID (int id);
+  void setAmtThreads (int amt);
+  void setState (int stage);
+  int getID();
+  int getAmtThreads();
+  int getState ();
+  void addThread (Thread thr);
+  void cleanProcess ();
+
+  // temp Thread used to add to threads
+  Thread tmpThread = Thread();
 
 private:
   int ID;
+  int amtThreads;
   std::vector<Thread> threads;
   Priority state;
 };

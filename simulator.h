@@ -50,14 +50,17 @@ public:
     this->numProcesses = -1;
     this->threadSwitchOverhead = -1;
     this->processSwitchOverhead = -1;
-
   }
 
   void setFileName (std::string file);
-  std::vector<int> split(std::string str, char delimiter);
+  std::vector<int> split (std::string str, char delimiter);
   std::string getFileName ();
   void parse (std::string line);
-  void simulate();    // main loop
+  void createProcessAndThread ();
+  void simulate ();    // main loop
+
+  // temp Process used to add to processStore
+  Process tmpProcess = Process();
 
 private:
   std::string fileName;
@@ -66,4 +69,5 @@ private:
   int processSwitchOverhead;
   std::vector<Process> processStore;
   std::vector<std::vector<int>> schedule;
+
 };
