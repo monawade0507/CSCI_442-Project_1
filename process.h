@@ -16,19 +16,23 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <ctype.h>
-#include "process.h"
+#include "thread.h"
 
-class Simulator {
+class Process {
+  enum Priority {
+    system = 0,
+    interactive = 1,
+    normal = 2,
+    batch = 3
+  };
+
 public:
-  Simulator () {
-    this->fileName = "";
+  Process () {
+    this->ID = -1;
   }
 
-  void setFileName (std::string file);
-  std::vector<int> split(std::string str, char delimiter);
-  std::string getFileName ();
-  void parse (std::string line);
-
 private:
-  std::string fileName;
+  int ID;
+  std::vector<Thread> threads;
+  Priority state;
 };

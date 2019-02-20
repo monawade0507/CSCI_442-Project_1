@@ -16,19 +16,42 @@
 #include <fstream>
 #include <sys/stat.h>
 #include <ctype.h>
-#include "process.h"
 
-class Simulator {
+class Thread {
+  struct Burst {
+    int cpu;
+    int io;
+  };
+
+  enum Stage {
+    NEW = 0,
+    READY = 1,
+    RUNNING = 2,
+    BLOCKED = 3,
+    EXIT = 4
+  };
+
 public:
-  Simulator () {
-    this->fileName = "";
+  Thread () {
+    this->ID = -1;
   }
 
-  void setFileName (std::string file);
+  void setID (int id);
+  int getID ();
+  void setStage (int state);
+  int getStage ();
+  void setBurstCPU (int cpu);
+  void setBurstIO (int io);
+  int getBurstCPU (int cpu);
+  int getBurstIO (int io);
   std::vector<int> split(std::string str, char delimiter);
-  std::string getFileName ();
-  void parse (std::string line);
+  void addToBurstVector (int cpu, int io);
+  // std::string getBurstPair ();
+
 
 private:
-  std::string fileName;
+  int ID;
+  std::vector<Burst> burstPair;
+  Burst thrBurst;
+  Stage state;
 };

@@ -17,8 +17,9 @@ LIBRARYS = -lpthread
 simulator: simulator.o
 	${LD} ${LDFLAGS} simulator.o -o $@ ${LIBRARYS}
 
-simulator.o : simulator.cpp simulator.h
+simulator.o : simulator.cpp simulator.h process.cpp process.h thread.cpp thread.h
 	${CXX} -c ${CXXFLAGS} -o $@ $<
+
 
 #
 # Please remember not to submit objects or binarys.
