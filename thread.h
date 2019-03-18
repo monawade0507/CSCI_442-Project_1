@@ -53,7 +53,7 @@ public:
   int getBurstIO ();
   std::vector<int> split(std::string str, char delimiter);
   void addToBurstVector (int cpu, int io);
-  // std::string getBurstPair ();
+  int getBurstInfo (int burst, std::string choice);
   void setArrivalTime (int time);
   int getArrivalTime ();
   void setAmtBurst (int amt);
@@ -71,5 +71,6 @@ private:
   Stage currentState;
   int arrivalTime;
   int amtBurst;
+
 
 };

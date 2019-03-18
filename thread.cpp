@@ -64,6 +64,13 @@ int Thread::getArrivalTime () {
 
 void Thread::setAmtBurst (int amt) {
   this->amtBurst = amt;
+  // Burst tmp;
+  // tmp.cpu = -5;
+  // tmp.io = -5;
+  // for (int i = 0; i < amt; i++) {
+  //   burstPair.push_back(tmp);
+  // }
+
 }
 
 int Thread::getAmtBurst () {
@@ -128,5 +135,26 @@ std::string Thread::getCurrentState () {
       default:
         return "NONE";
     }
+
+}
+
+int Thread::getBurstInfo(int burst, std::string choice) {
+  // either pass in cpu or io
+  Burst temp;
+  if (burst < this->burstPair.size()) {
+    temp = this->burstPair.at(burst);
+    if ( choice == "cpu" ) {
+      return temp.cpu;
+    }
+    else if ( choice == "io") {
+      return temp.io;
+    }
+    else {
+      return -1;
+    }
+  }
+  else {
+    return -2;
+  }
 
 }

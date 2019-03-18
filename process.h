@@ -77,11 +77,12 @@ public:
   // temp Thread used to add to threads
   Thread tmpThread = Thread();
   Event event;
+  std::vector<Thread> threads;
 
 private:
   int ID;
   int amtThreads;
-  std::vector<Thread> threads;
+
   Priority state;
 
 };

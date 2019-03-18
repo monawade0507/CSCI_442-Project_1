@@ -36,6 +36,7 @@ public:
   void parse (std::string line);
   void createProcessAndThread ();
   void simulate ();    // main loop
+  void FCFS();
 
   // temp Process used to add to processStore
   Process tmpProcess = Process();

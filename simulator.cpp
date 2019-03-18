@@ -4,6 +4,7 @@
 int main(int argc, char* argv[]) {
   bool fileNameEntered = false;
   Simulator sim = Simulator();
+  bool FCFS_on = false;
 
   // Handle the command line arguments and determine action
   if (argc == 1) {
@@ -33,6 +34,13 @@ int main(int argc, char* argv[]) {
         //  Priority, or Custom
       else if ( cmd == "-a" || cmd == "--algorithm" ) {
         std::cout << "Algorithm tag was used" << std::endl;
+        for (int j = 1; j < argc; j++) {
+          // Determine each flad or file name
+          std::string algorithm = argv[j];
+          if (algorithm == "FCFS") {
+            FCFS_on = true;
+          }
+        }
 
       }
         // -h, --help -> Display a help message about these flags then exit
@@ -46,13 +54,11 @@ int main(int argc, char* argv[]) {
         std::cout << "  -> The scheduling algorithm to use. One of FCFs, RR, Priority, or Custom" << std::endl;
         exit(0);
       }
-      else if ( cmd.length() > 1 && cmd != "-h" && cmd != "--help" && cmd != "-a" && cmd != "--algorithm" && cmd != "-t" && cmd !=  "--per_thread" ) {
+      else if ( cmd.length() > 1 && cmd != "-h" && cmd != "--help" && cmd != "-a" && cmd != "--algorithm" && cmd != "-t" && cmd !=  "--per_thread" && !FCFS_on) {
         // fileName string was provided
         sim.setFileName(cmd);
+        std::cout << "File Name entered: " << cmd << std::endl;
         fileNameEntered = true;
-      }
-      else {
-        std::cout << "No flag or file name was provided; existing simulation" << std::endl;
       }
     }
   }
@@ -87,6 +93,9 @@ int main(int argc, char* argv[]) {
   */
   sim.createProcessAndThread();
   sim.simulate();
+  if (FCFS_on) {
+    sim.FCFS();
+  }
 
 }
 
@@ -174,6 +183,7 @@ void Simulator::createProcessAndThread () {
           burstCnt ++;
           ptr ++;
         }
+
         this->tmpProcess.addThread(this->tmpProcess.tmpThread);
         threadCnt ++;
         //ptr ++;
@@ -198,15 +208,25 @@ void Simulator::simulate () {
     std::cout << "At time " << elem.first << ": " << std::endl;
     Process tmp = elem.second;
     std::cout << "  " << tmp.getEvent() << std::endl;
-    std::cout << "  Thread " << tmp.tmpThread.getID() << " ";
-    std::cout << "in process " << tmp.getID() << "  [";
-    std::cout << tmp.getPriority() << "] " << std::endl;
-    tmp.tmpThread.changeStage(1);
-    std::cout << "  Transitioned from " << tmp.tmpThread.getPreState();
-    std::cout << " to " << tmp.tmpThread.getCurrentState() << std::endl;
-
+    for ( int i = 0; i < tmp.threads.size(); i++) {
+      tmp.tmpThread = tmp.threads.at(i);
+      std::cout << "  Thread " << tmp.tmpThread.getID() << " ";
+      std::cout << "in process " << tmp.getID() << "  [";
+      std::cout << tmp.getPriority() << "] " << std::endl;
+      tmp.tmpThread.changeStage(1);
+      std::cout << "  Transitioned from " << tmp.tmpThread.getPreState();
+      std::cout << " to " << tmp.tmpThread.getCurrentState() << std::endl;
+      std::cout << std::endl;
+      std::cout << "Burst Size: " << tmp.tmpThread.getAmtBurst() << std::endl;
+      std::cout << "Burst time: " << std::endl;
+      for ( int j = 0; j < tmp.tmpThread.getAmtBurst(); j++) {
+        std::cout << "CPU: " << tmp.tmpThread.getBurstInfo(j, "cpu")  << std::endl;
+        std::cout << "IO:  " << tmp.tmpThread.getBurstInfo(j, "io") << std::endl;
+      }
+    }
   }
+}
 
-
-
+void Simulator::FCFS () {
+  std::cout << "FCFS algorithm " << std::endl;
 }
