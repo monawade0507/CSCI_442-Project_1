@@ -16,6 +16,75 @@ int Thread::getID () {
 //   return (int)this->state;
 // }
 
+void Thread::updateEvent (int update) {
+  this->preEvent = this->eventStatus;
+  this->eventStatus  = static_cast<Event>(update);
+}
+
+std::string Thread::getEvent () {
+  switch (this->eventStatus)
+  {
+    case THREAD_ARRIVED:
+      return "THREAD_ARRIVED";
+      break;
+    case THREAD_DISPATCH_COMPLETED:
+      return "THREAD_DISPATCH_COMPLETED";
+      break;
+    case PROCESS_DISPATCH_COMPLETED:
+      return "PROCESS_DISPATCH_COMPLETED";
+      break;
+    case CPU_BURST_COMPLETED:
+      return "CPU_BURST_COMPLETED";
+      break;
+    case IO_BURST_COMPLETED:
+      return "IO_BURST_COMPLETED";
+      break;
+    case THREAD_COMPLETED:
+      return "THREAD_COMPLETED";
+      break;
+    case THREAD_PREEMPTED:
+      return "THREAD_PREEMPTED";
+      break;
+    case DISPATCHER_INVOKED:
+      return "DISPATCHER_INVOKED";
+      break;
+    default:
+      return "NONE";
+  }
+}
+
+std::string Thread::getPreEvent () {
+  switch (this->preEvent)
+  {
+    case THREAD_ARRIVED:
+      return "THREAD_ARRIVED";
+      break;
+    case THREAD_DISPATCH_COMPLETED:
+      return "THREAD_DISPATCH_COMPLETED";
+      break;
+    case PROCESS_DISPATCH_COMPLETED:
+      return "PROCESS_DISPATCH_COMPLETED";
+      break;
+    case CPU_BURST_COMPLETED:
+      return "CPU_BURST_COMPLETED";
+      break;
+    case IO_BURST_COMPLETED:
+      return "IO_BURST_COMPLETED";
+      break;
+    case THREAD_COMPLETED:
+      return "THREAD_COMPLETED";
+      break;
+    case THREAD_PREEMPTED:
+      return "THREAD_PREEMPTED";
+      break;
+    case DISPATCHER_INVOKED:
+      return "DISPATCHER_INVOKED";
+      break;
+    default:
+      return "NONE";
+  }
+}
+
 void Thread::setBurstCPU (int cpu) {
   this->thrBurst.cpu = cpu;
 }
@@ -83,6 +152,7 @@ void Thread::cleanThread () {
   this->arrivalTime = -1;
   this->amtBurst = -1;
   //this->state = none;
+  this->eventStatus = static_cast<Event>(-1);
 }
 
 void Thread::changeStage (int newStages) {

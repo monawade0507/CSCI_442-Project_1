@@ -17,6 +17,7 @@
 #include <sys/stat.h>
 #include <ctype.h>
 #include <map>
+#include <queue>
 #include "process.h"
 
 class Simulator {
@@ -36,7 +37,7 @@ public:
   void parse (std::string line);
   void createProcessAndThread ();
   void simulate ();    // main loop
-  void FCFS();
+  void FCFS(bool verbose_act);
 
   // temp Process used to add to processStore
   Process tmpProcess = Process();
@@ -51,8 +52,8 @@ private:
   std::vector<std::vector<int>> schedule;
 
   // Event queue
-  // Acts like a timeline for exuecuting the processes and threads
-  // map<time, thread>
-  std::map<int, Process> eventQueue;
+  // Holds all of the events that occur over a simulation
+  std::queue<Thread> events;
+  std::queue<Thread> completeSimulation;
 
 };
