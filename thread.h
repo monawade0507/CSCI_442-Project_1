@@ -73,6 +73,7 @@ public:
     this->waitingTime = -1;
     this->taskTime = -1;
     this->loc = 0;
+    this->processID = -1;
   }
 
   void setID (int id);
@@ -105,6 +106,7 @@ public:
   int waitingTime;
   int taskTime;
   int loc;
+  int processID;
 
 private:
   int ID;

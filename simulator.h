@@ -29,6 +29,7 @@ public:
     this->threadSwitchOverhead = -1;
     this->processSwitchOverhead = -1;
     this->time = -1;
+    this->threads = 0;
   }
 
   void setFileName (std::string file);
@@ -37,7 +38,11 @@ public:
   void parse (std::string line);
   void createProcessAndThread ();
   void simulate ();    // main loop
+  // algorithms
   void FCFS(bool verbose_act);
+  void RR(bool verbose_act);
+  void PRIORITY(bool verbose_act);
+  void CUSTOM(bool verbose_act);
 
   // temp Process used to add to processStore
   Process tmpProcess = Process();
@@ -48,6 +53,7 @@ private:
   int threadSwitchOverhead;
   int processSwitchOverhead;
   int time;
+  int threads;
   std::vector<Process> processStore;
   std::vector<std::vector<int>> schedule;
 

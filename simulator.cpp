@@ -5,6 +5,9 @@ int main(int argc, char* argv[]) {
   bool fileNameEntered = false;
   Simulator sim = Simulator();
   bool FCFS_on = false;
+  bool RR_on = false;
+  bool PRIORITY_on = false;
+  bool CUSTOM_on = false;
   bool verbose_on = false;
 
   // Handle the command line arguments and determine action
@@ -25,7 +28,7 @@ int main(int argc, char* argv[]) {
       }
 
         // -v, --verbose -> Output information about every state-changing event
-        //  and scheduling decision
+        //  and scheduling de cision
       else if ( cmd == "-v" || cmd == "--verbose" ) {
         std::cout << "Verbose tag was used" << std::endl;
         verbose_on = true;
@@ -41,6 +44,15 @@ int main(int argc, char* argv[]) {
           std::string algorithm = argv[j];
           if (algorithm == "FCFS") {
             FCFS_on = true;
+          }
+          if (algorithm == "RR" ) {
+            RR_on = true;
+          }
+          if (algorithm == "PRIORITY") {
+            PRIORITY_on = true;
+          }
+          if (algorithm == "CUSTOM") {
+            CUSTOM_on = true;
           }
         }
 
@@ -93,11 +105,8 @@ int main(int argc, char* argv[]) {
    event from the front of the event queue), so on until all threads are
    terminated.
   */
-  std::cout << "DONE 0" << std::endl;
   sim.createProcessAndThread();
-  std::cout << "DONE 1" << std::endl;
-  sim.simulate();
-  std::cout << "DONE 2" << std::endl;
+  //sim.simulate();
   if (FCFS_on) {
     sim.FCFS(verbose_on);
   }
@@ -166,6 +175,7 @@ void Simulator::createProcessAndThread () {
         std::vector<int> thr = schedule.at(ptr);
 
         this->tmpProcess.tmpThread.setID(threadCnt);
+        this->tmpProcess.tmpThread.processID = tmpProcess.getID();
         this->tmpProcess.tmpThread.setArrivalTime(thr.at(0));
         this->tmpProcess.tmpThread.setAmtBurst(thr.at(1));
         ptr ++;
@@ -174,7 +184,6 @@ void Simulator::createProcessAndThread () {
         this->time = this->tmpProcess.tmpThread.getArrivalTime();
         //eventQueue.insert(this->time, this->tmpProcess);
         //eventQueue.insert( std::pair<int, Process>(this->time, this->tmpProcess));
-        std::cout << "PLEASE";
         int burstCnt = 0;
         while (burstCnt < (this->tmpProcess.tmpThread.getAmtBurst())) {
           std::vector<int> pair = schedule.at(ptr);
@@ -201,7 +210,6 @@ void Simulator::createProcessAndThread () {
     //eventQueue.insert( std::pair<int, Process>(this->time, this->tmpProcess));
     //ptr ++;
     this->tmpProcess.cleanProcess();
-    std::cout << "WHY__";
   }
 
 }
@@ -235,13 +243,7 @@ void Simulator::simulate () {
 }
 
 void Simulator::FCFS (bool verbose_act) {
-
-  std::cout << "Starting Processes: " << processStore.size() << std::endl;
-  for (int i = 0; i  < processStore.size(); i++ ) {
-    std::cout << "Amount of Threads: " << processStore.at(i).threads.size() << std::endl;
-  }
-  std::cout << std::endl;
-
+  time = 0;
 /* processStore.front().threads.size()
     Each algorithm will act like individual event handlers
     FCFS will focus on adding the the eventQueue in the FCFS order
@@ -253,14 +255,18 @@ void Simulator::FCFS (bool verbose_act) {
 // Add to the eventQueue before launching into while loop for CPU scheduling simulation
 // Process are stored in a processStore; each process has a vector of threads
   processStore.front().threads.front().updateEvent(0);
-  processStore.front().threads.front().changeStage(0);
-  std::cout << "Adding Process " << processStore.front().getID();
-  std::cout << "  Thread " << processStore.front().threads.front().getID() << std::endl;
+  processStore.front().threads.front().changeStage(1);
+  time += processStore.front().threads.front().getArrivalTime();
+  std::cout << "*************************************" << std::endl;
+  //std::cout << "At time: " << time << std::endl;
+  std::cout << "  " << processStore.front().threads.front().getEvent() << std::endl;
+  std::cout << "  Thread " << processStore.front().threads.front().getID();
+  std::cout << "  in process " << processStore.front().threads.front().processID << std::endl;
+  std::cout << "  Transitioned from " << processStore.front().threads.front().getPreState();
+  std::cout << " to " << processStore.front().threads.front().getCurrentState() << std::endl;
+  processStore.front().threads.front().updateEvent(7);
   events.push(processStore.front().threads.front());
-  completeSimulation.push(processStore.front().threads.front());
   processStore.front().threads.erase(processStore.front().threads.begin());
-  //std::cout << "Remaining Processes: " << processStore.size() << std::endl;
-  //std::cout << "Remaining Threads in " << processStore.front().getID() << " : " << processStore.front().threads.size() << std::endl;
 
   while (!events.empty()) {
 
@@ -270,161 +276,207 @@ void Simulator::FCFS (bool verbose_act) {
       if (!processStore.front().threads.empty()) {
         // means that threads still need to be added to the events Queue
         processStore.front().threads.front().updateEvent(0);
-        processStore.front().threads.front().changeStage(0);
+        processStore.front().threads.front().changeStage(1);
+        time = processStore.front().threads.front().getArrivalTime();
+        std::cout << "*************************************" << std::endl;
+        //std::cout << "At time: " << time << std::endl;
+        std::cout << "  " << processStore.front().threads.front().getEvent() << std::endl;
+        std::cout << "  Thread " << processStore.front().threads.front().getID();
+        std::cout << "  in process " << processStore.front().threads.front().processID << std::endl;
+        std::cout << "  Transitioned from " << processStore.front().threads.front().getPreState();
+        std::cout << " to " << processStore.front().threads.front().getCurrentState() << std::endl;
+        processStore.front().threads.front().updateEvent(7);
         events.push(processStore.front().threads.front());
-        completeSimulation.push(processStore.front().threads.front());
-        std::cout << "Adding Process " << processStore.front().getID();
-        std::cout << "  Thread " << processStore.front().threads.front().getID() << std::endl;
         processStore.front().threads.erase(processStore.front().threads.begin());
-        //std::cout << "Remaining Processes: " << processStore.size() - 1 << std::endl;
-        //std::cout << "Remaining Threads in " << processStore.front().getID() << " : " << processStore.front().threads.size() << std::endl;
+        continue;
       }
       else {
         // you can remove the process when there are no more threads remaining
         processStore.erase(processStore.begin());
-      }
 
+      }
     }
 
     // Handle the events in the queue
     Thread thr = events.front();
-    std::cout << "Handling Thread: " << thr.getID() << std::endl;
-    std::cout << "Current Thread Event: " << thr.getEvent() << std::endl;
-    events.pop();
-    // Testing eventStatus between the 8 different events
-    //std::cout << "HERE " << std::endl;
-
     if (thr.getEvent() == "DISPATCHER_INVOKED") {
-
       // Navigates all events except for THREAD_COMPLETED
-      //std::cout << "DISPATCHER_INVOKED : ";
-
       if (thr.getPreEvent() == "THREAD_ARRIVED") {
-        //std::cout << "Previous event: THREAD_ARRIVED" << std::endl;
-        if (thr.getID() == 0) {
+        if (thr.getID() == 0) {   // First thread has arrived which means PROCESS dispatch needs to run
+          this->threads ++;
+          //std::cout << "At time: " << time << std::endl;
+          std::cout << "*************************************" << std::endl;
+          std::cout << "  " << thr.getEvent() << std::endl;
+          std::cout << "  Thread " << thr.getID();
+          std::cout << "  in process " << thr.processID << std::endl;
+          std::cout << "Selected from " << this->threads << " threads; will run to completion of burst" << std::endl;
+          thr.changeStage(1);
           thr.updateEvent(2);
-          thr.taskTime = 7;
-        }
-        else {
-          // otherwise, add event "THREAD_DISPATCH_COMPLETED"
-          thr.updateEvent(1);
-          thr.taskTime = 3;
-        }
-        // add to the queues
-        events.push(thr);
-        completeSimulation.push(thr);
-        continue;
-      }
-      if (thr.getPreEvent() == "THREAD_DISPATCH_COMPLETED") {
-        // update thread state to running
-        //std::cout << "Previous event: THREAD_DISPATCH_COMPLETED" << std::endl;
-        thr.updateEvent(3);
-        thr.taskTime = 3;
-        events.push(thr);
-        completeSimulation.push(thr);
-        continue;
-      }
-      if (thr.getPreEvent() == "PROCESS_DISPATCH_COMPLETED") {
-        //std::cout << "Previous event: PROCESS_DISPATCH_COMPLETED" << std::endl;
-        thr.updateEvent(3);
-        thr.taskTime = 7;
-        events.push(thr);
-        completeSimulation.push(thr);
-        continue;
-      }
-      if (thr.getPreEvent() == "CPU_BURST_COMPLETED") {
-        //std::cout << "Previous event: CPU_BURST_COMPLETED" << std::endl;
-        thr.changeStage(4);
-        thr.taskTime = thr.getBurstInfo(thr.loc, "cpu");
-        thr.loc ++;
-        events.push(thr);
-        completeSimulation.push(thr);
-        continue;
-      }
-      if (thr.getPreEvent() == "IO_BURST_COMPLETED") {
-        //std::cout << "Previous event: IO_BURST_COMPLETED" << std::endl;
-        thr.changeStage(2);
-        if (thr.getBurstInfo(thr.loc, "io") == 0) {
-          // if there is no io time, that means it is on the last thread
-          thr.loc = 0;
-          thr.updateEvent(6);
-        }
-        else {
-          thr.loc ++;
-          thr.updateEvent(3);
+          //events.push(thr);
 
         }
-        thr.taskTime = thr.getBurstInfo(thr.loc, "io");
+        else {
+          this->threads ++;
+          //std::cout << "At time: " << time << std::endl;
+          std::cout << "*************************************" << std::endl;
+          std::cout << "  " << thr.getEvent() << std::endl;
+          std::cout << "  Thread " << thr.getID();
+          std::cout << "  in process " << thr.processID << std::endl;
+          std::cout << "Selected from " << this->threads << " threads; will run to completion of burst" << std::endl;
+          thr.updateEvent(1);
+          thr.changeStage(1);
+        }
         events.push(thr);
-        completeSimulation.push(thr);
+        events.pop();
         continue;
-      }
+    }
+    if (thr.getPreEvent() == "PROCESS_DISPATCH_COMPLETED") {
+      thr.changeStage(2);
+      std::cout << "*************************************" << std::endl;
+      std::cout << "  " << thr.getEvent() << std::endl;
+      std::cout << "  Thread " << thr.getID();
+      std::cout << "  in process " << thr.processID << std::endl;
+      std::cout << "Selected from " << this->threads << " threads; will run to completion of burst" << std::endl;
+      thr.updateEvent(3);
+      events.push(thr);
+      events.pop();
+      continue;
+    }
+    if (thr.getPreEvent() == "THREAD_DISPATCH_COMPLETED") {
+      thr.changeStage(2);
+      std::cout << "*************************************" << std::endl;
+      std::cout << "  " << thr.getEvent() << std::endl;
+      std::cout << "  Thread " << thr.getID();
+      std::cout << "  in process " << thr.processID << std::endl;
+      std::cout << "Selected from " << this->threads << " threads; will run to completion of burst" << std::endl;
+      thr.updateEvent(3);
+      events.push(thr);
+      events.pop();
+      continue;
     }
 
-    if (thr.getEvent() == "THREAD_ARRIVED") {
-      std::cout << "THREAD_ARRIVED" << std::endl;
-      // test the thread ID
-      //  if ID == 0; then add event "PROCESS_DISPATCH_COMPLETED"
-      // change to dispatch
-      thr.updateEvent(7);
-      thr.taskTime = 0;
-      // add to the queues
+    if (thr.getPreEvent() == "CPU_BURST_COMPLETED") {
+      thr.changeStage(2);
+      std::cout << "*************************************" << std::endl;
+      std::cout << "  " << thr.getEvent() << std::endl;
+      std::cout << "  Thread " << thr.getID();
+      std::cout << "  in process " << thr.processID << std::endl;
+      std::cout << "Selected from " << this->threads << " threads; will run to completion of burst" << std::endl;
+      thr.updateEvent(5);
       events.push(thr);
-      completeSimulation.push(thr);
+      events.pop();
+      continue;
+    }
+
+
+  }
+
+    if (thr.getEvent() == "PROCESS_DISPATCH_COMPLETED") {
+      thr.changeStage(2);
+      std::cout << "*************************************" << std::endl;
+      //std::cout << "At time: " << time << std::endl;
+      std::cout << "  " << thr.getEvent() << std::endl;
+      std::cout << "  Thread " << thr.getID();
+      std::cout << "  in process " << thr.processID << std::endl;
+      std::cout << "  Transitioned from " << thr.getPreState();
+      std::cout << " to " << thr.getCurrentState() << std::endl;
+      thr.updateEvent(7);
+      //time += 7;
+      //thr.taskTime = 7;
+      events.push(thr);
+      events.pop();
       continue;
     }
 
     if (thr.getEvent() == "THREAD_DISPATCH_COMPLETED") {
-      // update thread state to running
-      std::cout << "THREAD_DISPATCH_COMPLETED" << std::endl;
       thr.changeStage(2);
+      std::cout << "*************************************" << std::endl;
+      //std::cout << "At time: " << time << std::endl;
+      std::cout << "  " << thr.getEvent() << std::endl;
+      std::cout << "  Thread " << thr.getID();
+      std::cout << "  in process " << thr.processID << std::endl;
+      std::cout << "  Transitioned from " << thr.getPreState();
+      std::cout << " to " << thr.getCurrentState() << std::endl;
       thr.updateEvent(7);
-      thr.taskTime = 0;
-      events.push(thr);
-      completeSimulation.push(thr);
-      continue;
-    }
 
-    if (thr.getEvent() == "PROCESS_DISPATCH_COMPLETED") {
-      std::cout << "PROCESS_DISPATCH_COMPLETED" << std::endl;
-      thr.changeStage(2);
-      thr.updateEvent(7);
-      thr.taskTime = 0;
+      //time += 7;
+      //thr.taskTime = 7;
       events.push(thr);
-      completeSimulation.push(thr);
+      events.pop();
       continue;
     }
 
     if (thr.getEvent() == "CPU_BURST_COMPLETED") {
-      std::cout << "CPU_BURST_COMPLETED" << std::endl;
       thr.changeStage(3);
-      thr.updateEvent(7);
-      thr.taskTime = 0;
+      int t = thr.getBurstInfo(thr.loc, "cpu");
+
+      std::cout << "*************************************" << std::endl;
+      std::cout << "CPU burst time: " << t << std::endl;
+      //std::cout << "At time: " << time << std::endl;
+      std::cout << "  " << thr.getEvent() << std::endl;
+      std::cout << "  Thread " << thr.getID();
+      std::cout << "  in process " << thr.processID << std::endl;
+      std::cout << "  Transitioned from " << thr.getPreState();
+      std::cout << " to " << thr.getCurrentState() << std::endl;
+
+      // Determine if last CPU
+      if (thr.getBurstInfo(thr.loc, "io") == 0) {
+        thr.updateEvent(7);
+      }
+      else {
+        thr.updateEvent(4);
+      }
+
+      //time += 7;
+      //thr.taskTime = 7;
       events.push(thr);
-      completeSimulation.push(thr);
+      events.pop();
       continue;
     }
 
     if (thr.getEvent() == "IO_BURST_COMPLETED") {
-      std::cout << "IO_BURST_COMPLETED" << std::endl;
-      thr.changeStage(2);
-      thr.updateEvent(7);
-      thr.taskTime = 0;
+      thr.changeStage(1);
+      int t = thr.getBurstInfo(thr.loc,"io" );
+      std::cout << "*************************************" << std::endl;
+      std::cout << "IO burst time: " << t << std::endl;
+      //std::cout << "At time: " << time << std::endl;
+      std::cout << "  " << thr.getEvent() << std::endl;
+      std::cout << "  Thread " << thr.getID();
+      std::cout << "  in process " << thr.processID << std::endl;
+      std::cout << "  Transitioned from " << thr.getPreState();
+      std::cout << " to " << thr.getCurrentState() << std::endl;
+      thr.loc ++;
+      thr.updateEvent(3);
       events.push(thr);
-      completeSimulation.push(thr);
+      events.pop();
       continue;
     }
 
     if (thr.getEvent() == "THREAD_COMPLETED") {
-      std::cout << "THREAD_COMPLETED" << std::endl;
-      // will not add anything to the events anymore; only the completeSimulation
+      threads --;
       thr.changeStage(4);
-      completeSimulation.push(thr);
+      std::cout << "*************************************" << std::endl;
+      //std::cout << "At time: " << time << std::endl;
+      std::cout << "  " << thr.getEvent() << std::endl;
+      std::cout << "  Thread " << thr.getID();
+      std::cout << "  in process " << thr.processID << std::endl;
+      std::cout << "  Transitioned from " << thr.getPreState();
+      std::cout << " to " << thr.getCurrentState() << std::endl;
+      events.pop();
       continue;
     }
-
   }
+}
 
+void Simulator::RR(bool verbose_act) {
+  std::cout << "Round Robin algorithm" << std::endl;
+}
 
-  std::cout << "completeSimulation Queue size " << completeSimulation.size() << std::endl;
+void Simulator::PRIORITY(bool verbose_act) {
+  std::cout << "Priority algorithm" << std::endl;
+}
+
+void Simulator::CUSTOM(bool verbose_act) {
+  std::cout << "CUSTOM algorithm" << std::endl;
+
 }
